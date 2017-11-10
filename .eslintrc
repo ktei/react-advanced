@@ -2,7 +2,8 @@
   "extends": "airbnb",
   "rules": {
     "react/prop-types": 0,
-    "linebreak-style": "off"
+    "linebreak-style": "off",
+    "arrow-parens": "off"
   },
   "env": {
     "browser": true
