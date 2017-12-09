@@ -1,5 +1,5 @@
 {
-  "name": "react-spa",
+  "name": "react-advanced",
   "version": "0.1.0",
   "description": "",
   "main": "index.js",
@@ -21,19 +21,15 @@
     "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-jsx-a11y": "^5.1.1",
     "eslint-plugin-react": "^7.4.0",
-    "import-sort-style-module": "^3.0.0",
     "style-loader": "^0.18.2",
     "webpack": "^3.6.0",
     "webpack-dev-server": "^2.9.1"
   },
   "dependencies": {
     "axios": "^0.16.2",
-    "bootstrap": "^3.3.7",
     "classnames": "^2.2.5",
-    "gravatar-url": "^2.0.0",
-    "react": "^15.6.1",
-    "react-dom": "^15.6.1",
-    "react-modal-dialog": "^4.0.7",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
     "react-router-dom": "^4.2.2"
   },
   "importSort": {

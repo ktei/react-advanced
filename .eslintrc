@@ -3,9 +3,16 @@
   "rules": {
     "react/prop-types": 0,
     "linebreak-style": "off",
-    "arrow-parens": "off"
+    "arrow-parens": "off",
+    "react/no-multi-comp": "off",
+    "jsx-a11y/no-static-element-interactions": "off",
+    "react/prefer-stateless-function": "off"
   },
   "env": {
     "browser": true
+  },
+  "globals": {
+    "$": true,
+    "google": true
   }
 }
