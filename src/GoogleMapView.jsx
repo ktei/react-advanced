@@ -3,8 +3,103 @@ import axios from 'axios';
 
 const API_KEY = 'AIzaSyDJT9vp5p-ZxxFV2WmFGbbYxaTuW33ANcM';
 
-export default function GoogleMapView() {
-  return <GoogleMap address="UNSW Sydney NSW" />;
+export default class GoogleMapView extends React.Component {
+  constructor() {
+    super();
+    this.state = { address: '' };
+
+    this.handleAddressSelected = this.handleAddressSelected.bind(this);
+  }
+
+  handleAddressSelected(address) {
+    this.setState({ address });
+  }
+
+  render() {
+    return (
+      <div>
+        <h3>GoogleMaps Integration</h3>
+        <AddressSearchBox onAddressSelected={this.handleAddressSelected} />
+        <GoogleMap address={this.state.address} />
+      </div>
+    );
+  }
+}
+
+function mapPredictionToAutocompleteOption(prediction) {
+  return {
+    value: prediction.place_id,
+    label: `${prediction.structured_formatting.main_text} ${prediction.structured_formatting.secondary_text}`,
+  };
+}
+
+class AddressSearchBox extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      searchTerm: '',
+    };
+    this.updateSearchBoxRef = this.updateSearchBoxRef.bind(this);
+    this.handleSearchTermChange = this.handleSearchTermChange.bind(this);
+  }
+
+  componentDidMount() {
+    $(this.searchBox).autocomplete({
+      source: (request, response) => {
+        const term = (request.term || '').trim();
+        if (term.length === 0) {
+          response([]);
+        } else {
+          const autoComplete = new google.maps.places.AutocompleteService();
+          autoComplete.getPlacePredictions({
+            input: term,
+            types: ['geocode'],
+            componentRestrictions: {
+              country: 'au',
+            },
+          }, (predictions) => {
+            const autocompleteOptions = (predictions || []).map(mapPredictionToAutocompleteOption);
+            // we just want New South Wales addresses for now
+            response(autocompleteOptions);
+          });
+        }
+      },
+      minLength: 2,
+      cacheLength: 0,
+      select: (event, ui) => {
+        event.preventDefault();
+        if (this.props.onAddressSelected) {
+          this.props.onAddressSelected(ui.item.label);
+        }
+        this.setState({ searchTerm: ui.item.label });
+        return false;
+      },
+      focus: () => false,
+    });
+  }
+
+  handleSearchTermChange(e) {
+    this.setState({ searchTerm: e.target.value });
+  }
+
+  updateSearchBoxRef(ref) {
+    this.searchBox = ref;
+  }
+
+  render() {
+    return (
+      <div>
+        <input
+          ref={this.updateSearchBoxRef}
+          className="form-control"
+          style={{ width: 400 }}
+          placeholder="Enter address"
+          value={this.state.searchTerm}
+          onChange={this.handleSearchTermChange}
+        />
+      </div>
+    );
+  }
 }
 
 class GoogleMap extends React.Component {
@@ -14,6 +109,27 @@ class GoogleMap extends React.Component {
   }
 
   componentDidMount() {
+    this.updateMap();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.address !== this.props.address) {
+      this.updateMap();
+    }
+  }
+
+  getGeocode() {
+    const address = encodeURIComponent(this.props.address);
+
+    return axios
+      .get(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${API_KEY}`);
+  }
+
+  updateMap() {
+    const addressToSearch = (this.props.address || '').trim();
+    if (!addressToSearch) {
+      return;
+    }
     this.getGeocode().then((response) => {
       const { results } = response.data;
       if (results.length) {
@@ -30,23 +146,13 @@ class GoogleMap extends React.Component {
     });
   }
 
-  getGeocode() {
-    const address = encodeURIComponent(this.props.address);
-
-    return axios
-      .get(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${API_KEY}`);
-  }
-
   updateMapContainerRef(ref) {
     this.mapContainer = ref;
   }
 
   render() {
     return (
-      <div>
-        <h3>{this.props.address}</h3>
-        <div ref={this.updateMapContainerRef} style={{ width: 800, height: 600 }} />
-      </div>
+      <div ref={this.updateMapContainerRef} style={{ width: 800, height: 600 }} />
     );
   }
 }
