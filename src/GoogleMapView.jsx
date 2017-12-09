@@ -59,7 +59,6 @@ class AddressSearchBox extends React.Component {
             },
           }, (predictions) => {
             const autocompleteOptions = (predictions || []).map(mapPredictionToAutocompleteOption);
-            // we just want New South Wales addresses for now
             response(autocompleteOptions);
           });
         }
