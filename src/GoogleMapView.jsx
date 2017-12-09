@@ -64,7 +64,6 @@ class AddressSearchBox extends React.Component {
         }
       },
       minLength: 2,
-      cacheLength: 0,
       select: (event, ui) => {
         event.preventDefault();
         if (this.props.onAddressSelected) {
