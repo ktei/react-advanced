@@ -45,10 +45,10 @@ class AddressSearchBox extends React.Component {
 
   componentDidMount() {
     $(this.searchBox).autocomplete({
-      source: (request, response) => {
+      source: (request, resolve) => {
         const term = (request.term || '').trim();
         if (term.length === 0) {
-          response([]);
+          resolve([]);
         } else {
           const autoComplete = new google.maps.places.AutocompleteService();
           autoComplete.getPlacePredictions({
@@ -59,7 +59,7 @@ class AddressSearchBox extends React.Component {
             },
           }, (predictions) => {
             const autocompleteOptions = (predictions || []).map(mapPredictionToAutocompleteOption);
-            response(autocompleteOptions);
+            resolve(autocompleteOptions);
           });
         }
       },
